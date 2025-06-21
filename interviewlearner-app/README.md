@@ -5,7 +5,7 @@ An educational overlay app that helps you learn to solve coding problems by prov
 ## Features
 
 - 📸 Screenshot capture of LeetCode problems
-- 🤖 AI-powered hint generation using Google Gemini
+- 🤖 AI-powered hint generation using OpenAI's GPT-4o
 - 💡 Educational hints instead of direct solutions
 - 🎯 Always-on-top overlay window
 - ⌨️ Global hotkey support (see shortcuts below)
@@ -29,14 +29,14 @@ npm run build
 
 ## Configuration
 
-You'll need a Google Gemini API key to use this app:
+You'll need an OpenAI API key to use this app:
 
-1. Get your API key from [Google AI Studio](https://makersuite.google.com/app/apikey)
+1. Get your API key from [OpenAI Platform](https://platform.openai.com/api-keys)
 2. Either:
    - Click the settings button (⚙️) in the app and enter your API key
    - Or create a `.env` file in the `interviewlearner-app` directory with:
      ```
-     VITE_GEMINI_API_KEY=your-api-key-here
+     VITE_OPENAI_API_KEY=sk-your-api-key-here
      ```
 
 ## How to Use & Shortcuts
@@ -60,7 +60,7 @@ You'll need a Google Gemini API key to use this app:
 - Vue 3 - UI framework
 - TypeScript - Type safety
 - Tesseract.js - OCR for text extraction
-- Google Gemini API - Hint generation
+- OpenAI API - Hint generation
 - Vite - Build tool
 
 # Vue 3 + TypeScript + Vite
