@@ -1,5 +1,5 @@
-// OpenAI Configuration
-export const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY || ''
+// Gemini Configuration
+export const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY || ''
 
 export const SYSTEM_PROMPT = `You are an educational coding assistant helping users learn how to solve programming problems.
 When given a coding problem (like from LeetCode), you should:
