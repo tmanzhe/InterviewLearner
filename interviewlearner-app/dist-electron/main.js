@@ -34,8 +34,50 @@ function createWindow() {
   } else {
     win.loadFile(path.join(RENDERER_DIST, "index.html"));
   }
-  globalShortcut.register("CommandOrControl+Shift+S", () => {
+  globalShortcut.register("CommandOrControl+H", () => {
     win == null ? void 0 : win.webContents.send("trigger-screenshot");
+  });
+  globalShortcut.register("CommandOrControl+B", () => {
+    if (win) {
+      win.isVisible() ? win.hide() : win.show();
+    }
+  });
+  const moveDistance = 20;
+  globalShortcut.register("CommandOrControl+Up", () => {
+    if (win) {
+      const [x, y] = win.getPosition();
+      win.setPosition(x, y - moveDistance);
+    }
+  });
+  globalShortcut.register("CommandOrControl+Down", () => {
+    if (win) {
+      const [x, y] = win.getPosition();
+      win.setPosition(x, y + moveDistance);
+    }
+  });
+  globalShortcut.register("CommandOrControl+Left", () => {
+    if (win) {
+      const [x, y] = win.getPosition();
+      win.setPosition(x - moveDistance, y);
+    }
+  });
+  globalShortcut.register("CommandOrControl+Right", () => {
+    if (win) {
+      const [x, y] = win.getPosition();
+      win.setPosition(x + moveDistance, y);
+    }
+  });
+  globalShortcut.register("CommandOrControl+L", () => {
+    win == null ? void 0 : win.webContents.send("trigger-delete-last-screenshot");
+  });
+  globalShortcut.register("CommandOrControl+Enter", () => {
+    win == null ? void 0 : win.webContents.send("trigger-process-screenshots");
+  });
+  globalShortcut.register("CommandOrControl+R", () => {
+    win == null ? void 0 : win.webContents.send("trigger-start-new-problem");
+  });
+  globalShortcut.register("CommandOrControl+Q", () => {
+    app.quit();
   });
 }
 ipcMain.handle("take-screenshot", async () => {
@@ -55,7 +97,7 @@ ipcMain.handle("minimize-window", () => {
   win == null ? void 0 : win.minimize();
 });
 ipcMain.handle("close-window", () => {
-  app.quit();
+  win == null ? void 0 : win.hide();
 });
 ipcMain.handle("toggle-always-on-top", () => {
   if (win) {

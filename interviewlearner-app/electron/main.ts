@@ -56,9 +56,57 @@ function createWindow() {
     win.loadFile(path.join(RENDERER_DIST, 'index.html'))
   }
 
-  // Register global shortcut for screenshot
-  globalShortcut.register('CommandOrControl+Shift+S', () => {
+  // Register global shortcuts
+  globalShortcut.register('CommandOrControl+H', () => {
     win?.webContents.send('trigger-screenshot')
+  })
+
+  globalShortcut.register('CommandOrControl+B', () => {
+    if (win) {
+      win.isVisible() ? win.hide() : win.show()
+    }
+  })
+
+  const moveDistance = 20
+  globalShortcut.register('CommandOrControl+Up', () => {
+    if (win) {
+      const [x, y] = win.getPosition()
+      win.setPosition(x, y - moveDistance)
+    }
+  })
+  globalShortcut.register('CommandOrControl+Down', () => {
+    if (win) {
+      const [x, y] = win.getPosition()
+      win.setPosition(x, y + moveDistance)
+    }
+  })
+  globalShortcut.register('CommandOrControl+Left', () => {
+    if (win) {
+      const [x, y] = win.getPosition()
+      win.setPosition(x - moveDistance, y)
+    }
+  })
+  globalShortcut.register('CommandOrControl+Right', () => {
+    if (win) {
+      const [x, y] = win.getPosition()
+      win.setPosition(x + moveDistance, y)
+    }
+  })
+
+  globalShortcut.register('CommandOrControl+L', () => {
+    win?.webContents.send('trigger-delete-last-screenshot')
+  })
+
+  globalShortcut.register('CommandOrControl+Enter', () => {
+    win?.webContents.send('trigger-process-screenshots')
+  })
+
+  globalShortcut.register('CommandOrControl+R', () => {
+    win?.webContents.send('trigger-start-new-problem')
+  })
+
+  globalShortcut.register('CommandOrControl+Q', () => {
+    app.quit()
   })
 }
 
@@ -83,7 +131,7 @@ ipcMain.handle('minimize-window', () => {
 })
 
 ipcMain.handle('close-window', () => {
-  app.quit()
+  win?.hide()
 })
 
 ipcMain.handle('toggle-always-on-top', () => {
