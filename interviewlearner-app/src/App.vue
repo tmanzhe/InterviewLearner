@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 import Tesseract from 'tesseract.js'
-import OpenAI from 'openai'
-import { OPENAI_API_KEY, SYSTEM_PROMPT } from './config/openai'
+import { GoogleGenerativeAI, GenerationConfig, Content } from '@google/generative-ai'
+import { GEMINI_API_KEY, SYSTEM_PROMPT } from './config/gemini'
 
 // State
 const screenshots = ref<string[]>([])
@@ -10,25 +10,26 @@ const isProcessing = ref(false)
 const hints = ref('')
 const error = ref('')
 const isAlwaysOnTop = ref(true)
-const apiKey = ref(OPENAI_API_KEY)
+const apiKey = ref(GEMINI_API_KEY)
 const showSettings = ref(false)
 
-// Initialize OpenAI
-let openai: OpenAI | null = null
+// Initialize Gemini
+let genAI: GoogleGenerativeAI | null = null
+const generationConfig: GenerationConfig = {
+  temperature: 0.7,
+  maxOutputTokens: 1000,
+};
 
-const initOpenAI = () => {
+const initGemini = () => {
   if (apiKey.value) {
-    openai = new OpenAI({
-      apiKey: apiKey.value,
-      dangerouslyAllowBrowser: true
-    })
+    genAI = new GoogleGenerativeAI(apiKey.value)
   }
 }
 
 // Screenshot and process
 const takeScreenshot = async () => {
   if (!apiKey.value) {
-    error.value = 'Please set your OpenAI API key in settings'
+    error.value = 'Please set your Gemini API key in settings'
     showSettings.value = true
     return
   }
@@ -62,7 +63,7 @@ const processScreenshots = async () => {
     return
   }
   if (!apiKey.value) {
-    error.value = 'Please set your OpenAI API key in settings'
+    error.value = 'Please set your Gemini API key in settings'
     showSettings.value = true
     return
   }
@@ -72,7 +73,7 @@ const processScreenshots = async () => {
   hints.value = ''
 
   try {
-    if (!openai) initOpenAI()
+    if (!genAI) initGemini()
     
     let combinedText = ''
     for (const dataURL of screenshots.value) {
@@ -90,20 +91,18 @@ const processScreenshots = async () => {
       throw new Error('No text found in screenshots')
     }
     
-    const completion = await openai!.chat.completions.create({
-      messages: [
-        { role: 'system', content: SYSTEM_PROMPT },
-        { 
-          role: 'user', 
-          content: `Here's a coding problem I'm working on (it might be in multiple parts from several screenshots):\n\n${combinedText}\n\nPlease provide helpful hints and guidance without giving the complete solution.`
-        }
-      ],
-      model: 'gpt-4-turbo-preview',
-      temperature: 0.7,
-      max_tokens: 1000
-    })
+    const model = genAI!.getGenerativeModel({ model: 'gemini-1.5-pro-latest' })
+    const userMessage = `Here's a coding problem I'm working on (it might be in multiple parts from several screenshots):\n\n${combinedText}\n\nPlease provide helpful hints and guidance without giving the complete solution.`
+    const contents: Content[] = [
+      { role: 'user', parts: [{ text: SYSTEM_PROMPT }] },
+      { role: 'model', parts: [{ text: "Okay, I understand. I'm ready to help. Please provide the coding problem." }] },
+      { role: 'user', parts: [{ text: userMessage }] }
+    ]
 
-    hints.value = completion.choices[0]?.message?.content || 'No hints generated'
+    const result = await model.generateContent({ contents, generationConfig })
+    const response = result.response
+    hints.value = response.text()
+
   } catch (err) {
     error.value = err instanceof Error ? err.message : 'An error occurred'
     console.error(err)
@@ -121,8 +120,8 @@ const togglePin = async () => {
 
 // Save API key
 const saveApiKey = () => {
-  localStorage.setItem('openai_api_key', apiKey.value)
-  initOpenAI()
+  localStorage.setItem('gemini_api_key', apiKey.value)
+  initGemini()
   showSettings.value = false
   error.value = ''
 }
@@ -130,10 +129,10 @@ const saveApiKey = () => {
 // Lifecycle
 onMounted(() => {
   // Load saved API key
-  const savedKey = localStorage.getItem('openai_api_key')
+  const savedKey = localStorage.getItem('gemini_api_key')
   if (savedKey) {
     apiKey.value = savedKey
-    initOpenAI()
+    initGemini()
   }
 
   // Listen for screenshot triggers from main process
@@ -176,16 +175,16 @@ onUnmounted(() => {
     <div v-if="showSettings" class="settings">
       <h3>Settings</h3>
       <label>
-        OpenAI API Key:
+        Gemini API Key:
         <input 
           v-model="apiKey" 
           type="password" 
-          placeholder="sk-..."
+          placeholder="Enter your key..."
           @keyup.enter="saveApiKey"
         />
       </label>
       <button @click="saveApiKey" class="btn primary">Save</button>
-      <p class="hint">Get your API key from <a href="https://platform.openai.com/api-keys" target="_blank">OpenAI</a></p>
+      <p class="hint">Get your API key from <a href="https://makersuite.google.com/app/apikey" target="_blank">Google AI Studio</a></p>
     </div>
 
     <!-- Main Content -->

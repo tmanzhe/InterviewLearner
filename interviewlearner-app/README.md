@@ -5,10 +5,10 @@ An educational overlay app that helps you learn to solve coding problems by prov
 ## Features
 
 - 📸 Screenshot capture of LeetCode problems
-- 🤖 AI-powered hint generation using ChatGPT
+- 🤖 AI-powered hint generation using Google Gemini
 - 💡 Educational hints instead of direct solutions
 - 🎯 Always-on-top overlay window
-- ⌨️ Global hotkey support (Ctrl+Shift+S)
+- ⌨️ Global hotkey support (see shortcuts below)
 
 ## Setup
 
@@ -29,24 +29,30 @@ npm run build
 
 ## Configuration
 
-You'll need an OpenAI API key to use this app:
+You'll need a Google Gemini API key to use this app:
 
-1. Get your API key from [OpenAI Platform](https://platform.openai.com/api-keys)
+1. Get your API key from [Google AI Studio](https://makersuite.google.com/app/apikey)
 2. Either:
    - Click the settings button (⚙️) in the app and enter your API key
-   - Or create a `.env` file with:
+   - Or create a `.env` file in the `interviewlearner-app` directory with:
      ```
-     VITE_OPENAI_API_KEY=sk-your-api-key-here
+     VITE_GEMINI_API_KEY=your-api-key-here
      ```
 
-## How to Use
+## How to Use & Shortcuts
 
-1. Launch the app - it will appear as an overlay window
-2. Navigate to a LeetCode problem in your browser
-3. Press the screenshot button or use `Ctrl+Shift+S`
-4. The app will capture the screen, extract the problem text, and provide helpful hints
-5. Use the pin button (📌) to toggle always-on-top mode
-6. Learn and solve the problem yourself with the guidance provided!
+- **Toggle Window Visibility**: `Cmd/Ctrl + B`
+- **Move Window**: `Cmd/Ctrl + Arrow keys`
+- **Take Screenshot**: `Cmd/Ctrl + H`
+- **Delete Last Screenshot**: `Cmd/Ctrl + L`
+- **Process Screenshots**: `Cmd/Ctrl + Enter`
+- **Start New Problem**: `Cmd/Ctrl + R`
+- **Quit**: `Cmd/Ctrl + Q`
+
+1. Launch the app. Use `Cmd/Ctrl+B` to show/hide it.
+2. Navigate to a coding problem.
+3. Use `Cmd/Ctrl+H` to take one or more screenshots of the problem.
+4. Use `Cmd/Ctrl+Enter` to process the screenshots and get hints.
 
 ## Tech Stack
 
@@ -54,7 +60,7 @@ You'll need an OpenAI API key to use this app:
 - Vue 3 - UI framework
 - TypeScript - Type safety
 - Tesseract.js - OCR for text extraction
-- OpenAI API - Hint generation
+- Google Gemini API - Hint generation
 - Vite - Build tool
 
 # Vue 3 + TypeScript + Vite
